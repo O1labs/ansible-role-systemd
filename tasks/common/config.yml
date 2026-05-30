@@ -15,17 +15,19 @@
 
 - name: Render unit configuration
   become: true
-  when: unit_config is defined and unit_config|length > 0 and
-    unit_item.type|default(_default_unit_type) != "conf"
+  when: >
+    unit_config | length > 0 and
+    unit_item.type | default(_default_unit_type) != "conf"
+  vars:
+    config: "{{ unit_item }}"
+    unit_dest: "{{ unit_item.path | default(_default_unit_path) }}/{{ unit_item.name }}.{{ unit_item.type | default(_default_unit_type) }}"
   ansible.builtin.template:
     src: "systemd.unit.j2"
-    dest: "{{ unit_item.path | default(_default_unit_path) }}/{{ unit_item.name }}.{{ unit_item.type | default(_default_unit_type) }}"
+    dest: "{{ unit_dest }}"
     owner: "root"
     group: "root"
     mode: "0644"
     backup: "{{ systemd_backup_files | default(_default_systemd_backup_files) }}"
-  vars:
-    config: "{{ unit_item }}"
   register: "restart_units"
   loop: "{{ unit_config }}"
   loop_control:
@@ -38,17 +40,19 @@
 
 - name: Render override unit configuration
   become: true
-  when: unit_config is defined and unit_config|length > 0 and
+  when: >
+    unit_config | length > 0 and
     unit_item.type | default(_default_unit_type) == "conf"
+  vars:
+    config: "{{ unit_item }}"
+    unit_dest: "{{ unit_item.path | default(_default_unit_path) }}/{{ unit_item.name }}.{{ unit_item.type | default(_default_unit_type) }}"
   ansible.builtin.template:
     src: "override.conf.j2"
-    dest: "{{ unit_item.path | default(_default_unit_path) }}/{{ unit_item.name }}.{{ unit_item.type | default(_default_unit_type) }}"
+    dest: "{{ unit_dest }}"
     owner: "root"
     group: "root"
     mode: "0644"
     backup: "{{ systemd_backup_files | default(_default_systemd_backup_files) }}"
-  vars:
-    config: "{{ unit_item }}"
   register: "restart_override_units"
   loop: "{{ unit_config }}"
   loop_control:

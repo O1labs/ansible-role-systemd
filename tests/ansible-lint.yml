@@ -1,7 +1,8 @@
 ---
 # see for details: https://docs.ansible.com/ansible-lint/index.html
 exclude_paths:
-  - ../.git/
-  - ../.github
+  - .git/
+  - .github/
+  - tests/molecule/
 warn_list:
   - experimental

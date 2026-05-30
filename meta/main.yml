@@ -6,7 +6,7 @@ galaxy_info:
   description: Systemd, a system and service manager for Linux operating systems
   company: "O1.IO"
   license: license (MIT)
-  min_ansible_version: "2.5"
+  min_ansible_version: "2.14"
   platforms:
     - name: EL
       versions:

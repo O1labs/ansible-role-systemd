@@ -6,3 +6,4 @@ tests/molecule/config/pytestdebug.log
 
 # Ignore any nested __pycache__ directories
 **/__pycache__/
+.ansible/
