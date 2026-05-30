@@ -13,27 +13,47 @@
   tags:
     - config
 
-- name: Render unit configuration files
+- name: Render systemd unit files
   become: true
-  when: unit_config | length > 0
   vars:
     config: "{{ unit_item }}"
-    unit_type: "{{ unit_item.type | default(_default_unit_type) }}"
-    unit_dest: "{{ unit_item.path | default(_default_unit_path) }}/{{ unit_item.name }}.{{ unit_type }}"
-    unit_template_src: "{{ 'override.conf.j2' if unit_type == 'conf' else 'systemd.unit.j2' }}"
+    unit_dest: "{{ unit_item.path | default(_default_unit_path) }}/{{ unit_item.name }}.{{ unit_item.type | default(_default_unit_type) }}"
   ansible.builtin.template:
-    src: "{{ unit_template_src }}"
+    src: systemd.unit.j2
     dest: "{{ unit_dest }}"
-    owner: "root"
-    group: "root"
+    owner: root
+    group: root
     mode: "0644"
     backup: "{{ systemd_backup_files | default(_default_systemd_backup_files) }}"
-  register: render_units
   loop: "{{ unit_config }}"
   loop_control:
     loop_var: unit_item
     label: "{{ unit_item.name }}.{{ unit_item.type | default(_default_unit_type) }}"
-  notify: "{{ 'Reload systemd daemon' if unit_type == 'conf' else 'Reload systemd units' }}"
+  when: unit_item.type | default(_default_unit_type) != 'conf'
+  register: render_units
+  notify: Reload systemd units
   tags:
     - config
     - molecule-idempotence-notest
+
+- name: Render systemd drop-in files
+  become: true
+  vars:
+    config: "{{ unit_item }}"
+    unit_dest: "{{ unit_item.path | default(_default_unit_path) }}/{{ unit_item.name }}.{{ unit_item.type | default(_default_unit_type) }}"
+  ansible.builtin.template:
+    src: override.conf.j2
+    dest: "{{ unit_dest }}"
+    owner: root
+    group: root
+    mode: "0644"
+    backup: "{{ systemd_backup_files | default(_default_systemd_backup_files) }}"
+  loop: "{{ unit_config }}"
+  loop_control:
+    loop_var: unit_item
+    label: "{{ unit_item.name }}.{{ unit_item.type | default(_default_unit_type) }}"
+  when: unit_item.type | default(_default_unit_type) == 'conf'
+  register: render_dropins
+  notify: Reload systemd daemon
+  tags:
+    - config
