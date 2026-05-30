@@ -8,25 +8,26 @@
     daemon_reload: true
   when:
     - restart_item.changed
+    - restart_item.unit_item.type | default(_default_unit_type) != 'conf'
     - restart_item.unit_item.reload_on_change is not defined or restart_item.unit_item.reload_on_change
     - restart_item.unit_item.name is not search("^[^@]+@$")
-  loop: "{{ restart_units.results }}"
+  loop: "{{ render_units.results }}"
   loop_control:
     loop_var: restart_item
     label: "{{ restart_item.unit_item.name }}.{{ restart_item.unit_item.type | default(_default_unit_type) }}"
-  failed_when: restart_item.failed | default(false) | bool
 
 - name: Reload systemd daemon
   become: true
   listen: "Reload systemd daemon"
   ansible.builtin.systemd:
     daemon_reload: true
-  when: restart_item.changed
-  loop: "{{ restart_override_units.results }}"
+  when:
+    - restart_item.changed
+    - restart_item.unit_item.type | default(_default_unit_type) == 'conf'
+  loop: "{{ render_units.results }}"
   loop_control:
     loop_var: restart_item
     label: "{{ restart_item.unit_item.name }}.{{ restart_item.unit_item.type | default(_default_unit_type) }}"
-  failed_when: restart_item.failed | default(false) | bool
 
 - name: Uninstall systemd units
   become: true
