@@ -4,10 +4,13 @@
   gather_facts: false
   tasks:
     - name: Ensure apt is updated
-      raw: apt-get update
+      ansible.builtin.raw: apt-get update
+      changed_when: false
 
     - name: Install system dependencies (sudo, Python, pip)
-      raw: apt-get install -y sudo python3 python3-pip
+      ansible.builtin.raw: apt-get install -y sudo python3 python3-pip
+      changed_when: false
 
     - name: Install python dependencies
-      raw: pip install pytest-testinfra molecule-docker
+      ansible.builtin.raw: pip install pytest-testinfra molecule-docker
+      changed_when: false

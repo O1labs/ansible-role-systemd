@@ -18,16 +18,28 @@ For general information and guidelines for contributing to these roles and the A
 
 All [PRs](https://github.com/0x0I/ansible-role-systemd/pulls) are welcome! :+1: The following guidelines and CI pipeline are provided for validating role functionality and avoiding regressions for each submitted request:
 
-**Note:** to download and install dependencies, execute `bundle install` at project root. A working installation of Ruby is required.
+Install test and lint dependencies from the repo root:
+
+```bash
+python -m pip install -r tests/requirements.txt
+```
 
 #### CI Pipeline
 
 | Test | Description | Dependencies | Validation Command |
 | --- | --- | --- | --- |
-| :zap: `yamllint` | Validates `yaml` adheres to coding standards and best practices as [configured](https://github.com/0x0I/ansible-role-systemd/blob/master/test/lint/yaml-lint.yml). | [yamllint](https://yamllint.readthedocs.io/en/stable/) (python package) | `yamllint --config-file ./test/lint/yaml-lint.yml .` |
-| :zap: `ansible-lint` | Validates ansible module and construct usage adheres to Ansible standards and practices as [configured](https://github.com/0x0I/ansible-role-systemd/blob/master/test/lint/.ansible-lint). | [ansible-lint](https://docs.ansible.com/ansible-lint/) (python package) | `ansible-lint -c ./test/lint/.ansible-lint .` |
-| :wrench: `integration testing` | Utilizing Chef's [test-kitchen](https://docs.chef.io/kitchen.html) framework and the [kitchen-ansible](https://github.com/neillturner/kitchen-ansible) provisioner, integration testing of this role is organized according to the various provisioning phases and should be executed prior to PR submission to validate new modifications and identify/prevent regressions. | [test-kitchen](https://github.com/test-kitchen/test-kitchen#test-kitchen) (Ruby gem) | `kitchen test uninstall` |
-| :traffic_light: `Continuous Integration (CI)` | Automatic E2E testing of this role is accomplished leveraging the [Travis-CI](https://travis-ci.com/0x0I/ansible-role-systemd) test infrastructure platform and is executed on each pull request. Requests should not be merged unless all tests pass or the community approves otherwise. | *N/A* | *see* [.travis.yml](https://github.com/0x0I/ansible-role-systemd/blob/master/.travis.yml) for additional details |
+| :zap: `yamllint` | Validates `yaml` adheres to coding standards and best practices as [configured](https://github.com/O1ahmad/ansible-role-systemd/blob/master/tests/yaml-lint.yml). | [yamllint](https://yamllint.readthedocs.io/en/stable/) | `yamllint --config-file ./tests/yaml-lint.yml .` |
+| :zap: `ansible-lint` | Validates Ansible module and construct usage as [configured](https://github.com/O1ahmad/ansible-role-systemd/blob/master/tests/ansible-lint.yml). | [ansible-lint](https://docs.ansible.com/ansible-lint/) | `ansible-lint --config-file ./tests/ansible-lint.yml .` |
+| :wrench: `molecule` | Integration tests for config, launch, and uninstall scenarios using Docker. Shared scenario settings live in [tests/molecule/base.yml](https://github.com/O1ahmad/ansible-role-systemd/blob/master/tests/molecule/base.yml). | [Molecule](https://ansible.readthedocs.io/projects/molecule/) + [molecule-docker](https://github.com/ansible-community/molecule-plugins) | `cd tests && molecule --base-config molecule/base.yml test -s <scenario>` |
+| :traffic_light: `Continuous Integration (CI)` | GitHub Actions runs lint and Molecule on each push and pull request. Requests should not be merged unless all jobs pass or the community approves otherwise. | *N/A* | *see* [.github/workflows/CI.yaml](https://github.com/O1ahmad/ansible-role-systemd/blob/master/.github/workflows/CI.yaml) |
+
+Example Molecule commands:
+
+```bash
+cd tests && molecule --base-config molecule/base.yml test -s config
+cd tests && molecule --base-config molecule/base.yml test -s launch
+cd tests && molecule --base-config molecule/base.yml test -s uninstall
+```
 
 ## Issues
 

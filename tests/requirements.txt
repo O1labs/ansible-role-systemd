@@ -1,0 +1,6 @@
+ansible-core==2.17.7
+ansible-lint==24.12.2
+yamllint==1.35.1
+molecule==24.12.0
+molecule-docker==2.1.0
+pytest-testinfra==10.1.1

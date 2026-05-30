@@ -1,25 +1,3 @@
 ---
-dependency:
-  name: galaxy
-driver:
-  name: docker
-platforms:
-  - name: instance
-    image: geerlingguy/docker-ubuntu2404-ansible:latest
-    pre_build_image: true
-    privileged: true
-    override_command: false
-    cgroupns_mode: host
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
-provisioner:
-  name: ansible
-  playbooks:
-    prepare: ../prepare.yml
-  env:
-    ANSIBLE_ROLES_PATH: "../../../../"
-verifier:
-  name: testinfra
-  directory: ./tests
 scenario:
   name: config

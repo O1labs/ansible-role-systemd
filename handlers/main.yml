@@ -1,50 +1,45 @@
 ---
 - name: Reload systemd units
   become: true
-  listen: "Reload systemd units"
+  listen: Reload systemd units
   ansible.builtin.systemd:
     name: "{{ restart_item.dest | basename }}"
     state: "{{ restart_item.unit_item.state | default(omit) }}"
     daemon_reload: true
   when:
-    - restart_item.changed and (restart_item.unit_item.reload_on_change is not defined or restart_item.unit_item.reload_on_change) and
-      (restart_item.unit_item.name is not search("^[^@]+@$"))
-  loop: "{{ restart_units.results }}"
+    - restart_item.changed
+    - restart_item.unit_item.reload_on_change is not defined or restart_item.unit_item.reload_on_change
+    - restart_item.unit_item.name is not search("^[^@]+@$")
+  loop: "{{ render_units.results | default([]) }}"
   loop_control:
     loop_var: restart_item
     label: "{{ restart_item.unit_item.name }}.{{ restart_item.unit_item.type | default(_default_unit_type) }}"
-  failed_when: "{{ restart_item.failed | default(false) | bool }}"
 
 - name: Reload systemd daemon
   become: true
-  listen: "Reload systemd daemon"
+  listen: Reload systemd daemon
   ansible.builtin.systemd:
     daemon_reload: true
-  when: restart_item.changed
-  loop: "{{ restart_override_units.results }}"
-  loop_control:
-    loop_var: restart_item
-    label: "{{ restart_item.unit_item.name }}.{{ restart_item.unit_item.type | default(_default_unit_type) }}"
-  failed_when: "{{ restart_item.failed | default(false) | bool }}"
 
 - name: Uninstall systemd units
   become: true
   listen: Uninstall units
   ansible.builtin.systemd:
     name: "{{ unit_item.name }}.{{ unit_item.type | default(_default_unit_type) }}"
-    state: "stopped"
+    state: stopped
     enabled: "no"
   loop: "{{ unit_config }}"
   loop_control:
     loop_var: unit_item
     label: "{{ unit_item.name }}.{{ unit_item.type | default(_default_unit_type) }}"
-  failed_when: "{{ unit_item.failed | default(false) | bool }}"
 
 - name: Remove managed systemd unit files
   become: true
   listen: Uninstall units
+  vars:
+    unit_dest: "{{ unit_item.path | default(_default_unit_path) }}/{{ unit_item.name }}.{{ unit_item.type | default(_default_unit_type) }}"
   ansible.builtin.file:
-    path: "{{ unit_item.path | default(_default_unit_path) }}/{{ unit_item.name }}.{{ unit_item.type | default(_default_unit_type) }}"
+    path: "{{ unit_dest }}"
     state: absent
   loop: "{{ unit_config }}"
   loop_control:

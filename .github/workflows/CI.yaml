@@ -10,14 +10,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
 
       - name: Lint yaml and Ansible configs
         run: |
           python -m pip install --upgrade pip
-          pip install ansible-lint==24.12.2 yamllint==1.35.1
+          pip install -r tests/requirements.txt
           yamllint --config-file ./tests/yaml-lint.yml .
           ansible-lint --config-file ./tests/ansible-lint.yml .
+
   molecule:
     strategy:
       matrix:
@@ -26,17 +32,17 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.13"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install molecule-docker pytest-testinfra ansible
+          pip install -r tests/requirements.txt
 
       - name: Start Docker
         run: |
@@ -44,4 +50,4 @@ jobs:
           sudo systemctl enable docker
 
       - name: Run Molecule Test
-        run: cd tests && molecule test -s ${{ matrix.scenario }}
+        run: cd tests && molecule --base-config molecule/base.yml test -s ${{ matrix.scenario }}

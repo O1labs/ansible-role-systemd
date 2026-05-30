@@ -1,14 +1,12 @@
 ---
-
 - name: Force the reload of the modified systemd units
   ansible.builtin.meta: flush_handlers
 
 - name: Activate configured Systemd units
   become: true
-  when: >
-    unit_config is defined and unit_config | length > 0 and
-    (unit_item.type is not defined or unit_item.type != 'conf') and
-    (unit_item.name is not search("^[^@]+@$"))
+  when:
+    - unit_item.type | default(_default_unit_type) != 'conf'
+    - unit_item.name is not search("^[^@]+@$")
   vars:
     unit_item_manage_state: "{{ unit_item.manage_state | default(true) | bool }}"
   ansible.builtin.systemd:
@@ -22,4 +20,3 @@
   tags:
     - launch
     - molecule-idempotence-notest
-  failed_when: "{{ unit_item.failed | default(false) | bool }}"
