@@ -1,0 +1,18 @@
+name: API Track
+description: REST API (OpenAPI) data collection or operations
+labels: ["track:api"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What needs to be done?
+    validations:
+      required: true
+  - type: input
+    id: spec_url
+    attributes:
+      label: OpenAPI Spec URL
+      placeholder: https://
+    validations:
+      required: false

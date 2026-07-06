@@ -1,0 +1,18 @@
+name: IoT Track
+description: IoT (OpenHAB) binding data collection, channels, or operations
+labels: ["track:iot"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What needs to be done?
+    validations:
+      required: true
+  - type: input
+    id: binding_name
+    attributes:
+      label: Binding Name
+      placeholder: e.g. mqtt, zwave, hue
+    validations:
+      required: false

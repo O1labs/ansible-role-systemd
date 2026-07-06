@@ -1,0 +1,25 @@
+name: Blockchain Track
+description: Blockchain / smart-contract / ABI data collection or operations
+labels: ["track:blockchain"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What needs to be done?
+    validations:
+      required: true
+  - type: input
+    id: contract_address
+    attributes:
+      label: Contract Address
+      placeholder: 0x...
+    validations:
+      required: false
+  - type: input
+    id: chain
+    attributes:
+      label: Chain
+      placeholder: e.g. Ethereum mainnet, Base, Polygon
+    validations:
+      required: false

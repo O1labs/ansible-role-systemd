@@ -1,0 +1,5 @@
+# GitHub CODEOWNERS for O1labs platform management
+# Each member repo gets a copy tailored to its directory structure.
+
+# Default owners for everything
+* @O1labs/owners

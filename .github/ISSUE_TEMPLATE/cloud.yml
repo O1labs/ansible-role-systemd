@@ -1,0 +1,18 @@
+name: Cloud Track
+description: Cloud provider data collection, pricing, or surfaces
+labels: ["track:cloud"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What needs to be done?
+    validations:
+      required: true
+  - type: input
+    id: spec_url
+    attributes:
+      label: Spec URL (if applicable)
+      placeholder: https://
+    validations:
+      required: false

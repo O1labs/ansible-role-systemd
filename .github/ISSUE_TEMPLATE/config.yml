@@ -1,0 +1,19 @@
+name: Config / Cross-cutting
+description: Cross-cutting work (framework, networking, docs, meta, configuration)
+labels: ["track:cross-cutting"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What needs to be done?
+    validations:
+      required: true
+  - type: input
+    id: track_hint
+    attributes:
+      label: Track Hint
+      description: If this relates to a specific track, note it here
+      placeholder: cloud, oss, api, rpc, blockchain, iot, cli
+    validations:
+      required: false
